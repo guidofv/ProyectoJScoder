@@ -51,7 +51,7 @@ while (transactionType != 'C' && transactionType != 'V') {
 switch (transactionType) {
     case 'C':
            foreignCurrencyOut = Number(prompt(`Actualmente el tipo de cambio es AR$ ${activeCurrency.exchangeRateSell.toFixed(2)} por ${chosenForeignCurrency} para la venta. Ingrese la cantidad de ${chosenForeignCurrency} que desea comprar`));
-        while ((foreignCurrencyOut*activeCurrency.exchangeRateSell) > (200*currency1.exchangeRateSell) || isNaN(foreignCurrencyOut)) {
+        while ((foreignCurrencyOut*activeCurrency.exchangeRateSell) > (200*currency1.exchangeRateSell) || isNaN(foreignCurrencyOut) || foreignCurrencyOut <= 0) {
             foreignCurrencyOut = Number(prompt(`No podemos procesar su operación. Por favor, ingrese la cantidad de ${chosenForeignCurrency} a comprar respetando el formato numérico y el cupo de U$S 200.`));
         }
         alert(`Para comprar ${chosenForeignCurrency} ${foreignCurrencyOut.toFixed(2)} deberá desembolsar AR$ ${localCurrencyIn(activeCurrency.exchangeRateSell, foreignCurrencyOut).toFixed(2)} más impuesto PAIS de AR$ ${impuestoPais(localCurrencyIn).toFixed(2)} y retención a cuenta de ganancias por AR$ ${retGanancias(localCurrencyIn).toFixed(2)}`)
