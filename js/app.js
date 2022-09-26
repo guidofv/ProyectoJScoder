@@ -1,14 +1,16 @@
 let foreignCurrencyIn;
 let foreignCurrencyOut;
 let chosenForeignCurrency;
+let transactionType;
+let thisTransaction = {currency:"",transaction:""};
 let currencyTypes = [];
 const foreignCurrencies = [];
 
 class ForeignCurrency {
-    constructor (type, exchangeRateBuy, exchangeRateSell){
+    constructor(type, exchangeRateBuy, exchangeRateSell) {
         this.type = type,
-        this.exchangeRateBuy = Number(exchangeRateBuy),
-        this.exchangeRateSell = Number(exchangeRateSell);
+            this.exchangeRateBuy = Number(exchangeRateBuy),
+            this.exchangeRateSell = Number(exchangeRateSell);
     }
 };
 
@@ -16,11 +18,19 @@ const currency1 = new ForeignCurrency('USD', 141, 149);
 const currency2 = new ForeignCurrency('EUR', 142, 150);
 const currency3 = new ForeignCurrency('BRL', 25.20, 29.20);
 
-foreignCurrencies.push(currency1,currency2, currency3);
+foreignCurrencies.push(currency1, currency2, currency3);
 
-for (const currency of foreignCurrencies){
-        currencyTypes.push(currency.type);
-    }
+
+chosenForeignCurrency = document.getElementById('chosen-foreign-currency');
+chosenForeignCurrency.addEventListener('change', () => chosenForeignCurrency.value); //adquiere el chosenForeignCurrency
+
+transactionType = document.getElementById('transaction-type');
+transactionType.addEventListener('change', () => transactionType.value);
+
+
+for (const currency of foreignCurrencies) {
+    currencyTypes.push(currency.type);
+}
 
 function localCurrencyIn(exchangeRateSell, foreignCurrencyOut) {
     return localCurrencyIn = exchangeRateSell * foreignCurrencyOut;
@@ -38,18 +48,22 @@ function localCurrencyOut(exchangeRateBuy, foreignCurrencyIn) {
     return localCurrencyOut = exchangeRateBuy * foreignCurrencyIn;
 }
 
-while(!currencyTypes.includes(chosenForeignCurrency)){
-chosenForeignCurrency = prompt(`Por favor, indique con qué moneda desea operar: ${currencyTypes.join(', ')}.`).toUpperCase();
+
+let continueButton = document.getElementById('continue');
+continueButton.addEventListener('click', () =>{
+    updateTransaction();
+});
+
+let updateTransaction = () => {
+    thisTransaction.currency = chosenForeignCurrency.value;
+    thisTransaction.transaction = transactionType.value;
+    console.log(thisTransaction);
 }
 
-const activeCurrency = foreignCurrencies.find(currency => currency.type === chosenForeignCurrency);
 
-let transactionType = prompt(`Por favor, indique qué tipo de operación desea realizar: (C) AR$ a ${chosenForeignCurrency} (V) ${chosenForeignCurrency} a AR$`).toUpperCase();
-while (transactionType != 'C' && transactionType != 'V') {
-    transactionType = prompt('La opción ingresada es inválida. (C) AR$ a U$S (V) U$S a AR$').toUpperCase();
-}
 switch (transactionType) {
     case 'C':
+
            foreignCurrencyOut = Number(prompt(`Actualmente el tipo de cambio es AR$ ${activeCurrency.exchangeRateSell.toFixed(2)} por ${chosenForeignCurrency} para la venta. Ingrese la cantidad de ${chosenForeignCurrency} que desea comprar`));
         while ((foreignCurrencyOut*activeCurrency.exchangeRateSell) > (200*currency1.exchangeRateSell) || isNaN(foreignCurrencyOut) || foreignCurrencyOut <= 0) {
             foreignCurrencyOut = Number(prompt(`No podemos procesar su operación. Por favor, ingrese la cantidad de ${chosenForeignCurrency} a comprar respetando el formato numérico y el cupo de U$S 200.`));
