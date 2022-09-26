@@ -2,7 +2,7 @@ let foreignCurrencyIn;
 let foreignCurrencyOut;
 let chosenForeignCurrency;
 let transactionType;
-let thisTransaction = {currency:"",transaction:""};
+let thisTransaction = { currency: "", transaction: "" };
 let currencyTypes = [];
 const foreignCurrencies = [];
 
@@ -18,6 +18,7 @@ const currency1 = new ForeignCurrency('USD', 141, 149);
 const currency2 = new ForeignCurrency('EUR', 142, 150);
 const currency3 = new ForeignCurrency('BRL', 25.20, 29.20);
 
+
 foreignCurrencies.push(currency1, currency2, currency3);
 
 
@@ -26,6 +27,14 @@ chosenForeignCurrency.addEventListener('change', () => chosenForeignCurrency.val
 
 transactionType = document.getElementById('transaction-type');
 transactionType.addEventListener('change', () => transactionType.value);
+
+
+
+foreignCurrencies.forEach(currency => {
+    let currencyOption = document.createElement('option');
+    currencyOption.innerHTML = currency.type;
+    chosenForeignCurrency.appendChild(currencyOption);
+})
 
 
 for (const currency of foreignCurrencies) {
@@ -48,21 +57,39 @@ function localCurrencyOut(exchangeRateBuy, foreignCurrencyIn) {
     return localCurrencyOut = exchangeRateBuy * foreignCurrencyIn;
 }
 
+let transactionDesc = document.getElementById('transaction-desc');
 
 let continueButton = document.getElementById('continue');
-continueButton.addEventListener('click', () =>{
+continueButton.addEventListener('click', () => {
     updateTransaction();
 });
 
+
+
 let updateTransaction = () => {
-    thisTransaction.currency = chosenForeignCurrency.value;
+    thisTransaction.currency = foreignCurrencies.find(currency => currency.type === chosenForeignCurrency.value);
     thisTransaction.transaction = transactionType.value;
-    console.log(thisTransaction);
+    p = document.createElement('p');
+
+    switch (thisTransaction.transaction) {
+        case 'Buy':
+            transactionDesc.innerText = `Actualmente el tipo de cambio es AR$ ${thisTransaction.currency.exchangeRateSell} por ${thisTransaction.currency.type} para la venta. Ingrese la cantidad de ${thisTransaction.currency.type} que desea comprar`;
+            break;
+        case 'Sell':
+            transactionDesc.innerText = `Actualmente el tipo de cambio es AR$ ${thisTransaction.currency.exchangeRateBuy} por ${thisTransaction.currency.type} para la compra. Ingrese la cantidad de ${thisTransaction.currency.type} que desea vender`
+            break;
+        default:
+            transactionDesc.innerText = '';
+    }
 }
 
 
-switch (transactionType) {
-    case 'C':
+
+console.log(thisTransaction.transaction);
+
+/* switch (thisTransaction.transaction) {
+    case 'Buy':
+
 
            foreignCurrencyOut = Number(prompt(`Actualmente el tipo de cambio es AR$ ${activeCurrency.exchangeRateSell.toFixed(2)} por ${chosenForeignCurrency} para la venta. Ingrese la cantidad de ${chosenForeignCurrency} que desea comprar`));
         while ((foreignCurrencyOut*activeCurrency.exchangeRateSell) > (200*currency1.exchangeRateSell) || isNaN(foreignCurrencyOut) || foreignCurrencyOut <= 0) {
@@ -73,10 +100,18 @@ switch (transactionType) {
         alert('Operación exitosa. No olvide que por haber operado una compra en el MULC, el BCRA le impide vender títulos contra moneda extranjera durante los próximos 90 días.');
         break;
     case 'V':
+
+
+
+
+
+
         foreignCurrencyIn = Number(prompt(`Actualmente el tipo de cambio es AR$ ${activeCurrency.exchangeRateBuy.toFixed(2)} por unidad monetaria para la compra. Ingrese la cantidad de moneda extranjera que desea vender`));
         while (isNaN(foreignCurrencyIn) || foreignCurrencyIn<=0) {
             foreignCurrencyIn = Number(prompt(`No podemos procesar su operación. ${chosenForeignCurrency} a vender respetando el formato numérico.`));
         }
         alert(`Acreditaremos en su cuenta un total de AR$ ${localCurrencyOut(activeCurrency.exchangeRateBuy, foreignCurrencyIn).toFixed(2)} a cambio de sus ${chosenForeignCurrency} ${foreignCurrencyIn.toFixed(2)} . Su Banco Central le agradece la gentileza.`);
         break;
-};
+
+    }
+}*/
