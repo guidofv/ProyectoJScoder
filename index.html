@@ -6,29 +6,36 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link href="./css/styles.css" type="text/css" rel="stylesheet">
 </head>
 
 <body>
-    <p>
-        <select id="chosen-foreign-currency">
-            <option value="">Seleccionar moneda</option>
-        </select>
-    </p>
-    <p>
-        <select id="transaction-type">
-            <option value="">Seleccionar operación</option>
-            <option value="Buy">Compra</option>
-            <option value="Sell">Venta</option>
-        </select>
-    </p>
-    <p>
-        <input type="button" id="continue" value="Continuar">
-    </p>
-    <p id="transaction-desc"></p>
-    <p>
-        <input type="submit" id="aceptar" value="Aceptar">
-    </p>
-    </form>
+    <nav><h1>Homebanking <u>sin cepo</u></h1></nav>
+    <div id="menu-container">
+        <card id="menu">
+            <p class="transaction-data">
+                <select id="chosen-foreign-currency" class="input">
+                    <option value="">Seleccionar moneda</option>
+                </select>
+                <p></p>
+                <select id="transaction-type" class="input">
+                    <option value="">Seleccionar operación</option>
+                    <option value="Buy">Compra</option>
+                    <option value="Sell">Venta</option>
+                </select>
+            <p></p>
+            </p>
+            <p>
+                <input type="button" class="input" id="continue" value="Continuar">
+            </p>
+            <p id="transaction-desc"></p>
+            <p id="money-out"></p>
+            <p id="money-in"></p>
+            <p id="calculate-container">
+            </p>
+            <p id="confirm-container"></p>
+        </card>
+    </div>
     <script src="./js/app.js"></script>
 </body>
 
