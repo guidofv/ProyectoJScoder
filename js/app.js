@@ -7,6 +7,8 @@ let foreignCurrencyOut;
 let thisTransaction = { currency: "", transaction: "" };
 // objeto inicializado vacío que  adquiere valores según input de usuario.
 
+let remainingQuota;
+
 let currencyTypes = [];
 // array que almacena sólo el código de moneda
 
@@ -16,10 +18,11 @@ const foreignCurrencies = [];
 class ForeignCurrency {
     constructor(type, exchangeRateBuy, exchangeRateSell) {
         this.type = type,
-        this.exchangeRateBuy = Number(exchangeRateBuy),
-        this.exchangeRateSell = Number(exchangeRateSell);
-    }
+            this.exchangeRateBuy = Number(exchangeRateBuy),
+            this.exchangeRateSell = Number(exchangeRateSell);
+    };
 };
+
 const currency1 = new ForeignCurrency('USD', 141, 149);
 const currency2 = new ForeignCurrency('EUR', 142, 150);
 const currency3 = new ForeignCurrency('BRL', 25.20, 29.20);
@@ -81,19 +84,23 @@ let calculateContainer = document.getElementById('calculate-container');
 let moneyIn = document.getElementById('money-in');
 let moneyOut = document.getElementById('money-out');
 
-let quotaConsumption = [];
 
-//se declara un array vacío donde se pushearán los débitos al cupo de U$S 200.
-
-for (let i = 0; i < localStorage.length; i++) {
-    let pastTransaction = localStorage.key(i);
-    quotaConsumption.push(JSON.parse(localStorage.getItem(pastTransaction)).quotaDownBy);
+if (JSON.parse(localStorage.getItem('quotaConsumption')) == null) {
+    var quotaConsumption = [];
+} else {
+    var quotaConsumption = JSON.parse(localStorage.getItem('quotaConsumption'));
 }
 
-// se pushea al array quotaConsumption los conumos de cupo registrados, expresados en dólares estadounidenses.
+// se declara un array vacío donde se pushearán los débitos al cupo de U$S 200. Dado que la declaración del array depende de una condición, no me quedó más alternativa que usar var para darle scope global.
 
-let remainingQuota = 200 - (quotaConsumption.reduce((acc, element) => acc + element, 0));
-// resta del cupo original de U$S 200 la suma de los elementos del array de consumos de cupo.
+if (typeof quotaConsumption === 'undefined') {
+    remainingQuota = 200;
+
+} else {
+    remainingQuota = 200 - (quotaConsumption.reduce((acc, element) => acc + element, 0));
+};
+
+// calcula el cupo restante
 
 let continueButton = document.getElementById('continue');
 continueButton.addEventListener('click', () => {
@@ -106,7 +113,6 @@ continueButton.addEventListener('click', () => {
         transactionType.remove();
     }
 });
-// obtiene el botón "Continuar" y le asigna comportamiento (desaparecer elementos y actualizar los datos almacenados de la transacción).
 
 let calculateMoneyIn
 
@@ -143,12 +149,10 @@ let updateTransaction = () => {
                         let confirm = document.getElementById('confirm');
                         confirm.addEventListener('click', () => {
                             alert(`Hemos debitado ${localCurrencyInFinal.toFixed(2)} de su cuenta.`);
-                            const thisTransactionJSON = JSON.stringify({
-                                currency: thisTransaction.currency.type,
-                                amount: foreignCurrencyOut,
-                                quotaDownBy: (foreignCurrencyOut * thisTransaction.currency.exchangeRateSell / foreignCurrencies[0].exchangeRateSell)
-                            });
-                            localStorage.setItem('transaction' + Math.random(), thisTransactionJSON);
+                            const quotaDownBy = (foreignCurrencyOut * thisTransaction.currency.exchangeRateSell / foreignCurrencies[0].exchangeRateSell)
+                            quotaConsumption.push(quotaDownBy);
+                            quotaConsumptionJSON = JSON.stringify(quotaConsumption);
+                            localStorage.setItem('quotaConsumption', quotaConsumptionJSON);
                             //asigna un ID a cada operación y almacena su moneda, cantidad comprada y equivalente en USD.
                             location.reload();
                         });
@@ -182,5 +186,7 @@ let updateTransaction = () => {
                 })
             })
             break;
+        default:
+            transactionDesc.innerText = '';
     }
 }
