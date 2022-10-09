@@ -30,3 +30,7 @@ body {
     border: 1%;
 }
 
+marquee{
+    background-color: black;
+    color:beige;
+}

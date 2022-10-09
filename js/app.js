@@ -84,14 +84,14 @@ let calculateContainer = document.getElementById('calculate-container');
 let moneyIn = document.getElementById('money-in');
 let moneyOut = document.getElementById('money-out');
 
+let quotaConsumption = [];
+let quotaConsumptionInLS = JSON.parse(localStorage.getItem('quotaConsumption'));
 
-if (JSON.parse(localStorage.getItem('quotaConsumption')) == null) {
-    var quotaConsumption = [];
-} else {
-    var quotaConsumption = JSON.parse(localStorage.getItem('quotaConsumption'));
-}
+if (quotaConsumptionInLS) {
+    quotaConsumption = quotaConsumptionInLS;
+};
 
-// se declara un array vacío donde se pushearán los débitos al cupo de U$S 200. Dado que la declaración del array depende de una condición, no me quedó más alternativa que usar var para darle scope global.
+// se declara un array vacío donde se pushearán los débitos al cupo de U$S 200, y otra variable donde se recupará lo contenido en localStorage con la clave quotaConsumption. En caso de existir registros en localStorage, el array vacío se reemplaza por lo que exista almacenado en localStorage.
 
 if (typeof quotaConsumption === 'undefined') {
     remainingQuota = 200;
@@ -105,7 +105,11 @@ if (typeof quotaConsumption === 'undefined') {
 let continueButton = document.getElementById('continue');
 continueButton.addEventListener('click', () => {
     if (chosenForeignCurrency.value === '' || transactionType.value === '') {
-        alert('Por favor, seleccione la moneda y el tipo de transacción a operar.')
+        Swal.fire({
+            text: 'Por favor, seleccione la moneda y el tipo de transacción a operar.',
+            icon: 'info',
+            confirmButtonText: 'Aceptar'
+        });
     } else {
         updateTransaction();
         continueButton.remove();
@@ -122,8 +126,16 @@ let updateTransaction = () => {
     switch (thisTransaction.transaction) {
         case 'Buy':
             if (remainingQuota <= 0.009999) {
-                alert('Ha consumido la totalidad del cupo para la compra de moneda extranjera. Sólo podrá vender divisas.');
-                location.reload();
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Ha consumido la totalidad del cupo para la compra de moneda extranjera. Sólo podrá vender divisas.',
+                    icon: 'warning',
+                    confirmButtonText: 'Aceptar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        location.reload();
+                    }
+                });
             } else {
                 transactionDesc.innerText = `Actualmente el tipo de cambio es AR$ ${thisTransaction.currency.exchangeRateSell} por ${thisTransaction.currency.type} para la venta. Ingrese la cantidad de ${thisTransaction.currency.type} que desea comprar.
             Su cupo remanente es de U$S ${remainingQuota.toFixed(2)}`;
@@ -133,8 +145,12 @@ let updateTransaction = () => {
                 calculateMoneyIn.addEventListener('click', () => {
                     foreignCurrencyOut = Number(document.getElementById('foreign-currency-out').value);
                     if ((foreignCurrencyOut * thisTransaction.currency.exchangeRateSell / foreignCurrencies[0].exchangeRateSell > remainingQuota.toFixed(2)) || foreignCurrencyOut <= 0) {
-                        alert(`No podemos procesar su operación. Por favor, ingrese un valor positivo respetando el cupo de U$S 200.`);
-                        location.reload();
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'No podemos procesar su operación. Por favor, ingrese un valor positivo respetando el cupo de U$S 200.',
+                            icon: 'error',
+                            confirmButtonText: 'Aceptar'
+                        });
                     } else {
                         moneyIn.innerHTML = `Compra: ${thisTransaction.currency.type} ${foreignCurrencyOut.toFixed(2)}
                 <br>AR$: ${localCurrencyIn(thisTransaction.currency.exchangeRateSell, foreignCurrencyOut).toFixed(2)}
@@ -148,13 +164,21 @@ let updateTransaction = () => {
                         confirmContainer.innerHTML = '<input type="submit" id="confirm"  class="input" value="Confirmar">'
                         let confirm = document.getElementById('confirm');
                         confirm.addEventListener('click', () => {
-                            alert(`Hemos debitado ${localCurrencyInFinal.toFixed(2)} de su cuenta.`);
                             const quotaDownBy = (foreignCurrencyOut * thisTransaction.currency.exchangeRateSell / foreignCurrencies[0].exchangeRateSell)
                             quotaConsumption.push(quotaDownBy);
                             quotaConsumptionJSON = JSON.stringify(quotaConsumption);
                             localStorage.setItem('quotaConsumption', quotaConsumptionJSON);
                             //asigna un ID a cada operación y almacena su moneda, cantidad comprada y equivalente en USD.
-                            location.reload();
+                            Swal.fire({
+                                title: 'Operación exitosa',
+                                text: `Hemos debitado AR$ ${localCurrencyInFinal.toFixed(2)} de su cuenta.`,
+                                icon: 'success',
+                                confirmButtonText: 'Aceptar'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    location.reload();
+                                };
+                            });
                         });
                     };
                 });
@@ -169,9 +193,17 @@ let updateTransaction = () => {
             calculateMoneyIn.addEventListener('click', () => {
                 foreignCurrencyIn = Number(document.getElementById('foreign-currency-in').value);
                 if (foreignCurrencyIn <= 0) {
-                    alert('No podemos procesar su operación. Por favor, ingrese un importe válido');
-                    location.reload();
-                }
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'No podemos procesar su operación. Por favor, ingrese un importe válido',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload();
+                        };
+                    });
+                };
                 moneyIn.innerHTML = `Venta: ${thisTransaction.currency.type} ${foreignCurrencyIn.toFixed(2)}
                 <br>Total a acreditar en su cuenta: AR$ ${localCurrencyOut(thisTransaction.currency.exchangeRateBuy, foreignCurrencyIn).toFixed(2)}`
                 transactionDesc.remove();
@@ -181,10 +213,18 @@ let updateTransaction = () => {
                 confirmContainer.innerHTML = '<input type="submit" id="confirm" value="Confirmar">'
                 let confirm = document.getElementById('confirm');
                 confirm.addEventListener('click', () => {
-                    alert(`Hemos acreditado AR$ ${localCurrencyOut.toFixed(2)} en su cuenta.`);
-                    location.reload();
-                })
-            })
+                    Swal.fire({
+                        title: 'Operación exitosa',
+                        text: `Hemos acreditado AR$ ${localCurrencyOut.toFixed(2)} en su cuenta.`,
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload();
+                        };
+                    });
+                });
+            });
             break;
         default:
             transactionDesc.innerText = '';
