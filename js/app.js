@@ -48,6 +48,7 @@ foreignCurrencies.forEach(currency => {
 for (const currency of foreignCurrencies) {
     currencyTypes.push(currency.type);
 }
+
 // genera un array con solamente los tipos de moneda extranjera disponibles.
 
 function localCurrencyIn(exchangeRateSell, foreignCurrencyOut) {
@@ -84,21 +85,29 @@ let calculateContainer = document.getElementById('calculate-container');
 let moneyIn = document.getElementById('money-in');
 let moneyOut = document.getElementById('money-out');
 
+let transactionLog = [];
+let transactionLogInLS = JSON.parse(localStorage.getItem('transactionLog'));
+
+// se genera un array vacío como log de transacciones, y se recupera en otra variable el transactionLog parseado del localStorage.
+
+if (transactionLogInLS) {
+    transactionLog = transactionLogInLS;
+};
+
+// en caso de que transactionLogInLS haya recuperado valores del LS, los asigna a transactionLog.
+
 let quotaConsumption = [];
-let quotaConsumptionInLS = JSON.parse(localStorage.getItem('quotaConsumption'));
+// se declara un array vacío donde se pushearán los débitos al cupo de U$S 200.
 
-if (quotaConsumptionInLS) {
-    quotaConsumption = quotaConsumptionInLS;
+for(const trx of transactionLog){
+    if(trx.transaction==='Buy'){
+    quotaConsumption.push(trx.quotaDownBy);
+    }
 };
 
-// se declara un array vacío donde se pushearán los débitos al cupo de U$S 200, y otra variable donde se recupará lo contenido en localStorage con la clave quotaConsumption. En caso de existir registros en localStorage, el array vacío se reemplaza por lo que exista almacenado en localStorage.
+// se recorre el log de transacciones y se pushea los consumos de cupo al array dedicado para ello.
 
-if (typeof quotaConsumption === 'undefined') {
-    remainingQuota = 200;
-
-} else {
-    remainingQuota = 200 - (quotaConsumption.reduce((acc, element) => acc + element, 0));
-};
+remainingQuota = 200 - (quotaConsumption.reduce((acc, element) => acc + element, 0));
 
 // calcula el cupo restante
 
@@ -164,10 +173,11 @@ let updateTransaction = () => {
                         confirmContainer.innerHTML = '<input type="submit" id="confirm"  class="input" value="Confirmar">'
                         let confirm = document.getElementById('confirm');
                         confirm.addEventListener('click', () => {
-                            const quotaDownBy = (foreignCurrencyOut * thisTransaction.currency.exchangeRateSell / foreignCurrencies[0].exchangeRateSell)
-                            quotaConsumption.push(quotaDownBy);
-                            quotaConsumptionJSON = JSON.stringify(quotaConsumption);
-                            localStorage.setItem('quotaConsumption', quotaConsumptionJSON);
+                            thisTransaction.id = Math.random();
+                            thisTransaction.quotaDownBy = (foreignCurrencyOut * thisTransaction.currency.exchangeRateSell / foreignCurrencies[0].exchangeRateSell)
+                            transactionLog.push(thisTransaction);
+                            transactionLogJSON = JSON.stringify(transactionLog);
+                            localStorage.setItem('transactionLog', transactionLogJSON);
                             //asigna un ID a cada operación y almacena su moneda, cantidad comprada y equivalente en USD.
                             Swal.fire({
                                 title: 'Operación exitosa',
@@ -213,6 +223,10 @@ let updateTransaction = () => {
                 confirmContainer.innerHTML = '<input type="submit" id="confirm" value="Confirmar">'
                 let confirm = document.getElementById('confirm');
                 confirm.addEventListener('click', () => {
+                    thisTransaction.id = Math.random();
+                    transactionLog.push(thisTransaction);
+                    transactionLogJSON = JSON.stringify(transactionLog);
+                    localStorage.setItem('transactionLog', transactionLogJSON);
                     Swal.fire({
                         title: 'Operación exitosa',
                         text: `Hemos acreditado AR$ ${localCurrencyOut.toFixed(2)} en su cuenta.`,
