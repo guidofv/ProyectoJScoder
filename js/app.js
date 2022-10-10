@@ -174,6 +174,9 @@ let updateTransaction = () => {
                         let confirm = document.getElementById('confirm');
                         confirm.addEventListener('click', () => {
                             thisTransaction.id = Math.random();
+                            thisTransaction.foreignCurrencyOut = foreignCurrencyOut;
+                            thisTransaction.localCurrencyIn = localCurrencyIn;
+                            thisTransaction.taxes = localCurrencyInFinal - localCurrencyIn;
                             thisTransaction.quotaDownBy = (foreignCurrencyOut * thisTransaction.currency.exchangeRateSell / foreignCurrencies[0].exchangeRateSell)
                             transactionLog.push(thisTransaction);
                             transactionLogJSON = JSON.stringify(transactionLog);
@@ -224,6 +227,8 @@ let updateTransaction = () => {
                 let confirm = document.getElementById('confirm');
                 confirm.addEventListener('click', () => {
                     thisTransaction.id = Math.random();
+                    thisTransaction.foreignCurrencyIn = foreignCurrencyIn;
+                    thisTransaction.localCurrencyOut = localCurrencyOut.toFixed(2); 
                     transactionLog.push(thisTransaction);
                     transactionLogJSON = JSON.stringify(transactionLog);
                     localStorage.setItem('transactionLog', transactionLogJSON);
