@@ -156,7 +156,7 @@ let updateTransaction = () => {
                     if ((foreignCurrencyOut * thisTransaction.currency.exchangeRateSell / foreignCurrencies[0].exchangeRateSell > remainingQuota.toFixed(2)) || foreignCurrencyOut <= 0) {
                         Swal.fire({
                             title: 'Error',
-                            text: 'No podemos procesar su operación. Por favor, ingrese un valor positivo respetando el cupo de U$S 200.',
+                            text: 'No podemos procesar su operación. Por favor, ingrese un valor positivo respetando el cupo restante.',
                             icon: 'error',
                             confirmButtonText: 'Aceptar'
                         });
