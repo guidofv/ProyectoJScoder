@@ -111,9 +111,9 @@ const currentDate = new Date
 const currentYearMonth = Number(String(currentDate.getFullYear()) + String(currentDate.getMonth() + 1));
 // se obtiene la fecha y se almacena en una variable el año y mes actual.
 
-const arrayOfDates = [];
+const trxDates = [];
 for (const trx of transactionLog) {
-    arrayOfDates.push(Number(trx.date));
+    trxDates.push(Number(trx.date));
 }
 
 // se recorre el log de transacciones para generar un array con el año-mes de todas las operaciones registradas
