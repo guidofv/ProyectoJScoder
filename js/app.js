@@ -18,8 +18,8 @@ const foreignCurrencies = [];
 class ForeignCurrency {
     constructor(type, exchangeRateBuy, exchangeRateSell) {
         this.type = type,
-            this.exchangeRateBuy = Number(exchangeRateBuy),
-            this.exchangeRateSell = Number(exchangeRateSell);
+        this.exchangeRateBuy = Number(exchangeRateBuy),
+        this.exchangeRateSell = Number(exchangeRateSell);
     };
 };
 
@@ -99,13 +99,31 @@ if (transactionLogInLS) {
 let quotaConsumption = [];
 // se declara un array vacío donde se pushearán los débitos al cupo de U$S 200.
 
-for(const trx of transactionLog){
-    if(trx.transaction==='Buy'){
-    quotaConsumption.push(trx.quotaDownBy);
+for (const trx of transactionLog) {
+    if (trx.transaction === 'Buy') {
+        quotaConsumption.push(trx.quotaDownBy);
     }
 };
 
 // se recorre el log de transacciones y se pushea los consumos de cupo al array dedicado para ello.
+
+const currentDate = new Date
+const currentYearMonth = Number(String(currentDate.getFullYear()) + String(currentDate.getMonth() + 1));
+// se obtiene la fecha y se almacena en una variable el año y mes actual.
+
+const arrayOfDates = [];
+for (const trx of transactionLog) {
+    arrayOfDates.push(Number(trx.date));
+}
+
+// se recorre el log de transacciones para generar un array con el año-mes de todas las operaciones registradas
+
+if (arrayOfDates[arrayOfDates.length - 1] != currentYearMonth) {
+    localStorage.clear();
+};
+
+// condicional que toma el año-mes de la última operación y en caso de ser diferente al año-mes actual, elimina el localStorage.
+// De esta manera, se restablece el cupo (ver siguiente línea de código)
 
 remainingQuota = 200 - (quotaConsumption.reduce((acc, element) => acc + element, 0));
 
@@ -174,6 +192,8 @@ let updateTransaction = () => {
                         let confirm = document.getElementById('confirm');
                         confirm.addEventListener('click', () => {
                             thisTransaction.id = Math.random();
+                            let currentDate = new Date;
+                            thisTransaction.date = Number(String(currentDate.getFullYear()) + String(currentDate.getMonth() + 1));
                             thisTransaction.foreignCurrencyOut = foreignCurrencyOut;
                             thisTransaction.localCurrencyIn = localCurrencyIn;
                             thisTransaction.taxes = localCurrencyInFinal - localCurrencyIn;
@@ -227,8 +247,10 @@ let updateTransaction = () => {
                 let confirm = document.getElementById('confirm');
                 confirm.addEventListener('click', () => {
                     thisTransaction.id = Math.random();
+                    let currentDate = new Date;
+                    thisTransaction.date = Number(String(currentDate.getFullYear()) + String(currentDate.getMonth() + 1));
                     thisTransaction.foreignCurrencyIn = foreignCurrencyIn;
-                    thisTransaction.localCurrencyOut = localCurrencyOut.toFixed(2); 
+                    thisTransaction.localCurrencyOut = localCurrencyOut.toFixed(2);
                     transactionLog.push(thisTransaction);
                     transactionLogJSON = JSON.stringify(transactionLog);
                     localStorage.setItem('transactionLog', transactionLogJSON);
