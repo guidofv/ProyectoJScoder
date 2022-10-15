@@ -1,5 +1,10 @@
 [
-    {"type": "USD", "exchangeRateBuy": 141, "exchangeRateSell": 149},
-    {"type": "EUR", "exchangeRateBuy": 142, "exchangeRateSell": 150},
-    {"type": "BRL", "exchangeRateBuy": 25.20, "exchangeRateSell": 29.20}
+    {"type": "USD", "exchangeRateBuy": 149.25, "exchangeRateSell": 157.25},
+    {"type": "EUR", "exchangeRateBuy": 146, "exchangeRateSell": 148},
+    {"type": "BRL", "exchangeRateBuy": 26.20, "exchangeRateSell": 29.80},
+    {"type": "MXN", "exchangeRateBuy": 0.1323, "exchangeRateSell": 0.1325},
+    {"type": "CLP", "exchangeRateBuy": 0.1577, "exchangeRateSell": 0.1577},
+    {"type": "JPY", "exchangeRateBuy": 1.0195, "exchangeRateSell": 1.0199},
+    {"type": "GBP", "exchangeRateBuy": 169.1736, "exchangeRateSell": 169.852},
+    {"type": "UYU", "exchangeRateBuy": 3.6755, "exchangeRateSell": 3.6758}
 ]
