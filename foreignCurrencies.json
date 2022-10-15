@@ -1,0 +1,5 @@
+[
+    {"type": "USD", "exchangeRateBuy": 141, "exchangeRateSell": 149},
+    {"type": "EUR", "exchangeRateBuy": 142, "exchangeRateSell": 150},
+    {"type": "BRL", "exchangeRateBuy": 25.20, "exchangeRateSell": 29.20}
+]

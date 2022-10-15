@@ -9,27 +9,19 @@ let thisTransaction = { currency: "", transaction: "" };
 
 let remainingQuota;
 
-let currencyTypes = [];
-// array que almacena sólo el código de moneda
-
 const foreignCurrencies = [];
-// array que almacena monedas como objetos literales
 
-class ForeignCurrency {
-    constructor(type, exchangeRateBuy, exchangeRateSell) {
-        this.type = type,
-        this.exchangeRateBuy = Number(exchangeRateBuy),
-        this.exchangeRateSell = Number(exchangeRateSell);
-    };
+// array que almacenará monedas como objetos literales
+
+const getCurrencies = async () => {
+    const response = await fetch('../foreignCurrencies.json');
+    const data = await response.json();
+    return data;
 };
 
-const currency1 = new ForeignCurrency('USD', 141, 149);
-const currency2 = new ForeignCurrency('EUR', 142, 150);
-const currency3 = new ForeignCurrency('BRL', 25.20, 29.20);
-// se instancia la clase constructora para crear tres monedas.
+getCurrencies().then((currencies) => currencies.forEach(currency => foreignCurrencies.push(currency)));
 
-foreignCurrencies.push(currency1, currency2, currency3);
-// pushea las monedas (objetos) creadas con la instanciación de la clase constructora ForeignCurrency.
+// se obtiene del JSON las monedas y se las pushea al array foreignCurrencies.
 
 let chosenForeignCurrency = document.getElementById('chosen-foreign-currency');
 // se declara la variable para adquirir el input de usuario sobre el tipo de moneda a operar.
@@ -37,47 +29,47 @@ let chosenForeignCurrency = document.getElementById('chosen-foreign-currency');
 let transactionType = document.getElementById('transaction-type');
 // se declara la variable para adquirir el input de usuario sobre el tipo de operación.
 
-foreignCurrencies.forEach(currency => {
-    let currencyOption = document.createElement('option');
-    currencyOption.innerHTML = currency.type;
-    chosenForeignCurrency.appendChild(currencyOption);
-});
+const renderCurrencies = async (foreignCurrencies) => {
+    foreignCurrencies = await getCurrencies();
+    foreignCurrencies.forEach(currency => {
+        let currencyOption = document.createElement('option');
+        currencyOption.innerHTML = currency.type;
+        chosenForeignCurrency.appendChild(currencyOption);
+    });
+    return foreignCurrencies;
+};
+
+const monedas = renderCurrencies(foreignCurrencies);
 
 // pinta los códigos de moneda en el combo de selección.
 
-for (const currency of foreignCurrencies) {
-    currencyTypes.push(currency.type);
-}
-
-// genera un array con solamente los tipos de moneda extranjera disponibles.
-
 function localCurrencyIn(exchangeRateSell, foreignCurrencyOut) {
     return localCurrencyIn = exchangeRateSell * foreignCurrencyOut;
-}
+};
 
 // calcula la cantidad de moneda local equivalente según tipo de cambio venta.
 
 function impuestoPais(localCurrencyIn) {
     return impuestoPais = localCurrencyIn * 0.35;
-}
+};
 
 // obtiene el impuesto país en caso de operación tipo venta.
 
 function retGanancias(localCurrencyIn) {
     return retGanancias = localCurrencyIn * 0.30;
-}
+};
 
 // obtiene la retención a cuenta del impuesto a las ganancias en caso de operación tipo venta.
 
 function localCurrencyInFinal(localCurrencyIn, impuestoPais, retGanancias) {
     return localCurrencyInFinal = Number(localCurrencyIn + impuestoPais + retGanancias);
-}
+};
 
 // obtiene la cantidad final de pesos a debitar en caso de operaciones tipo venta.
 
 function localCurrencyOut(exchangeRateBuy, foreignCurrencyIn) {
     return localCurrencyOut = exchangeRateBuy * foreignCurrencyIn;
-}
+};
 // obtiene la cantidad de pesos a acreditar en la cuenta del usuario en operaciones tipo compra.
 
 let transactionDesc = document.getElementById('transaction-desc');
@@ -114,7 +106,7 @@ const currentYearMonth = Number(String(currentDate.getFullYear()) + String(curre
 const trxDates = [];
 for (const trx of transactionLog) {
     trxDates.push(Number(trx.date));
-}
+};
 
 // se recorre el log de transacciones para generar un array con el año-mes de todas las operaciones registradas
 
@@ -142,10 +134,10 @@ continueButton.addEventListener('click', () => {
         continueButton.remove();
         chosenForeignCurrency.remove();
         transactionType.remove();
-    }
+    };
 });
 
-let calculateMoneyIn
+let calculateMoneyIn;
 
 let updateTransaction = () => {
     thisTransaction.currency = foreignCurrencies.find(currency => currency.type === chosenForeignCurrency.value);
@@ -269,5 +261,5 @@ let updateTransaction = () => {
             break;
         default:
             transactionDesc.innerText = '';
-    }
-}
+    };
+};
