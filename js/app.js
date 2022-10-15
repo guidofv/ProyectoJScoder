@@ -23,12 +23,6 @@ getCurrencies().then((currencies) => currencies.forEach(currency => foreignCurre
 
 // se obtiene del JSON las monedas y se las pushea al array foreignCurrencies.
 
-let chosenForeignCurrency = document.getElementById('chosen-foreign-currency');
-// se declara la variable para adquirir el input de usuario sobre el tipo de moneda a operar.
-
-let transactionType = document.getElementById('transaction-type');
-// se declara la variable para adquirir el input de usuario sobre el tipo de operación.
-
 const renderCurrencies = async (foreignCurrencies) => {
     foreignCurrencies = await getCurrencies();
     foreignCurrencies.forEach(currency => {
@@ -39,9 +33,15 @@ const renderCurrencies = async (foreignCurrencies) => {
     return foreignCurrencies;
 };
 
-const monedas = renderCurrencies(foreignCurrencies);
+renderCurrencies(foreignCurrencies);
 
 // pinta los códigos de moneda en el combo de selección.
+
+let chosenForeignCurrency = document.getElementById('chosen-foreign-currency');
+// se declara la variable para adquirir el input de usuario sobre el tipo de moneda a operar.
+
+let transactionType = document.getElementById('transaction-type');
+// se declara la variable para adquirir el input de usuario sobre el tipo de operación.
 
 function localCurrencyIn(exchangeRateSell, foreignCurrencyOut) {
     return localCurrencyIn = exchangeRateSell * foreignCurrencyOut;
